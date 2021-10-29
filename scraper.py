@@ -27,7 +27,7 @@ def start_reddit_api():
     api = PushshiftAPI(reddit)
     return api 
 
-def get_historic_posts(api, search_string, subreddit):
+def get_historic_posts(api, search_string, subreddit, start_date, end_date):
     start_date = int(dt.datetime(2021, 1, 6).timestamp())
     end_date = int(dt.datetime(2021, 1, 14).timestamp())
     result = api.search_submissions(after=start_date,
@@ -67,7 +67,7 @@ def serialize_submissions(submissions):
                 }
                 out_dict[post.id]['author'] = author
             except:
-                continue
+                out_dict[post.id]['author'] = None
 
 
     with open(destination, 'w') as file:
