@@ -27,9 +27,7 @@ def start_reddit_api():
     api = PushshiftAPI(reddit)
     return api 
 
-def get_historic_posts(api, search_string, subreddit, start_date, end_date):
-    start_date = int(dt.datetime(2021, 1, 6).timestamp())
-    end_date = int(dt.datetime(2021, 1, 14).timestamp())
+def get_historic_posts(api, search_string, subreddit, start_date = int(dt.datetime(2021, 1, 7).timestamp()), end_date = int(dt.datetime(2021, 1, 14).timestamp())):
     result = api.search_submissions(after=start_date,
                            before=end_date,
                            subreddit=subreddit,
@@ -46,6 +44,7 @@ def serialize_submissions(submissions):
     count = 0
     for post in submissions:
         if not (post.selftext == '[removed]' or post.selftext == '[deleted]'):
+            date = dt.date.fromtimestamp(float(post.created_utc))
             out_dict[post.id] = {
                 'score' : post.score,
                 'selftext' : post.selftext,
@@ -77,7 +76,7 @@ def serialize_submissions(submissions):
 
 def main():
     api = start_reddit_api()
-    res = get_historic_posts(api, 'gme|gamestop', 'wallstreetbets')
+    res = get_historic_posts(api, 'gme|gamestop', 'wallstreetbets', end_date=None)
     serialize_submissions(res)
  
 
