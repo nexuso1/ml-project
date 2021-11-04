@@ -77,10 +77,6 @@ def annotate(n, filename):
 
 
 def main():
-    post = {
-        'selftext' : "Gme is completely fucked!! GME TO DA MOOON NIBBBA"
-    }
-
     annotate(500, "reddit.json")
 
 if __name__ == "__main__":
