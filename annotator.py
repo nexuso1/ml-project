@@ -4,7 +4,8 @@ from os import path
 
 DATA_FOLDER = "Data"
 
-
+# Heuristic for skipping posts, returns true if there are atleast 2 
+# occurences of either gme or gamestop (case insensitive) in the text post
 def filter_post(post):
     res = re.findall("gme|gamestop", post['selftext'], re.IGNORECASE)
     if (len(res) > 1):
@@ -12,11 +13,12 @@ def filter_post(post):
 
     return False
 
-
+# Removes the 'irrelevant' posts from the file
 def format_json(json_file):
     json_file.pop('irrelevant')
     return json_file
 
+# Pauses annotation by dumping the dict into a json
 def save_progress(res : dict, dest_irr :str , dest_data : str):
     with open(dest_irr, 'w') as file:
         json.dump(res, file, indent=4)
@@ -26,6 +28,9 @@ def save_progress(res : dict, dest_irr :str , dest_data : str):
         json.dump(format_json(res), file, indent=4)
         file.close()
 
+# Go through all the posts and remember the answer given by the user
+# Commands:
+#   '1' = positive, '0' = negative, '3' - irrelevant, 'pause' - save progress
 def annotate(n: int, filename : str):
 
     filtered = 0

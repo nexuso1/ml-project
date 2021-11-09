@@ -10,7 +10,7 @@ import datetime as dt
 from psaw import PushshiftAPI
 from os import path
 
-
+# Sets up the PRAW API which is later used for scraping
 def start_reddit_api():
     pwd = str()
     with open('pw.txt', 'r') as file:
@@ -27,6 +27,7 @@ def start_reddit_api():
     api = PushshiftAPI(reddit)
     return api 
 
+# Gathers historic posts from the PushShift.io API, and returns them as a list
 def get_historic_posts(api, search_string, subreddit, start_date = int(dt.datetime(2021, 1, 7).timestamp()), end_date = int(dt.datetime(2021, 1, 14).timestamp())):
     result = api.search_submissions(after=start_date,
                            before=end_date,
@@ -38,6 +39,7 @@ def get_historic_posts(api, search_string, subreddit, start_date = int(dt.dateti
     
     return list(result)
 
+# Saves the submissions in a json, while storing relevant fields
 def serialize_submissions(submissions):
     out_dict = dict()
     destination = path.join('.', STORAGE_FOLDER_NAME, REDDIT_DATA_FILENAME)
@@ -45,6 +47,8 @@ def serialize_submissions(submissions):
     for post in submissions:
         if not (post.selftext == '[removed]' or post.selftext == '[deleted]'):
             date = dt.date.fromtimestamp(float(post.created_utc))
+
+            # Remember some useful data about the post
             out_dict[post.id] = {
                 'score' : post.score,
                 'selftext' : post.selftext,
@@ -66,6 +70,7 @@ def serialize_submissions(submissions):
                 }
                 out_dict[post.id]['author'] = author
             except:
+                # Couldn't find the author, set it to None
                 out_dict[post.id]['author'] = None
 
 
@@ -76,7 +81,11 @@ def serialize_submissions(submissions):
 
 def main():
     api = start_reddit_api()
+
+    # Gathers all text posts which contain keywords gme or gamestop from wallstreetbets
     res = get_historic_posts(api, 'gme|gamestop', 'wallstreetbets', end_date=None)
+
+    # Saves them in a json
     serialize_submissions(res)
  
 
